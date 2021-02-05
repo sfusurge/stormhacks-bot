@@ -1,6 +1,8 @@
 const discord = require('discord.js')
 const controller = require('./commands/controller')
-// const {addGuild} = require('./roleManager')
+const { readFileSync } = require('fs')
+
+const { token } = JSON.parse(readFileSync('hidden.json'))
 
 const client = new discord.Client()
 
@@ -10,6 +12,4 @@ client.on('ready', () => {
 
 client.on('message', message => controller(client, message))
 
-const discordSecret = process.env.discordSecret
-
-client.login(discordSecret)
+client.login(token)

@@ -2,34 +2,36 @@ const { readFileSync, writeFileSync } = require('fs')
 const { getPrefix } = require('../prefix')
 
 const verifyFilePath = `${__dirname}/../verify.json`
-const verifyFileData = JSON.parse(readFileSync(verifyFilePath))
 
 module.exports = (userMessage, args) => {
+  const sendError = error =>
+    userMessage.channel.send(error).then(() => userMessage.delete())
+
   if (args.length != 1) {
-    userMessage.channel.send(
-      `Unknown command \`${command}\`, use \`${getPrefix()}verify {email address}\``
-    )
+    sendError(`Invalid usage, use \`${getPrefix()}verify {email address}\``)
+    return
   }
 
   const [emailAddress] = args
+  const verifyFileData = JSON.parse(readFileSync(verifyFilePath))
 
   if (verifyFileData[emailAddress] === undefined) {
-    userMessage.channel.send(
-      `Unknown email address. Try again with the email you used to apply for StormHacks or contact an organizer`
+    sendError(
+      `Unknown email address. Try again with the email you used to apply for StormHacks or contact an organizer in the #verify-help channel`
     )
     return
   }
 
   if (userMessage.member.roles.cache.find(role => role.name === 'Hacker')) {
-    userMessage.channel.send(
+    sendError(
       `${userMessage.author.toString()}, you have already been verified.`
     )
     return
   }
 
-  if (verifyFileData[emailAddress] === true) {
-    userMessage.channel.send(
-      `\`${emailAddress}\` has already been verified by another user.`
+  if (verifyFileData[emailAddress] !== false) {
+    sendError(
+      `That email has already been verified. Contact an organizer in the #verify-help channel if you think that was a mistake.`
     )
     return
   }
@@ -38,12 +40,19 @@ module.exports = (userMessage, args) => {
     role => role.name === 'Hacker'
   )
 
+  if (!hackerRole) {
+    console.warn('Filed to find role Hacker!')
+    return
+  }
+
   userMessage.member.roles.add(hackerRole.id)
 
-  userMessage.channel.send(
-    `${userMessage.author.toString()}, you have been verified as \`${emailAddress}\`.`
-  )
-
-  verifyFileData[emailAddress] = true
+  verifyFileData[emailAddress] = {
+    user: userMessage.member.user.tag,
+    time: Date.now(),
+  }
   writeFileSync(verifyFilePath, JSON.stringify(verifyFileData), () => {})
+  userMessage.channel
+    .send(`${userMessage.author.toString()}, you have now been verified.`)
+    .then(() => userMessage.delete())
 }

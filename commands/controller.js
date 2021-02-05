@@ -1,9 +1,10 @@
 const { getPrefix } = require('../prefix')
 
 const commands = {
-  setPrefix: require('./setPrefix'),
+  // setPrefix: require('./setPrefix'),
   verify: require('./verify'),
   unknown: require('./unknown'),
+  help: require('./help'),
 }
 
 module.exports = (client, userMessage) => {
