@@ -1,0 +1,1 @@
+sudo screen -m -d -S discord node index.js
