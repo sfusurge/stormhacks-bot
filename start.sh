@@ -1,1 +1,1 @@
-sudo screen -m -d -S discord node index.js
+sudo screen -m -d -L -Logfile discord.log -S discord node index.js

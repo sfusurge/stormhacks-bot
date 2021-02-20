@@ -1,4 +1,4 @@
-const { setPrefix } = require('../prefix')
+const { setPrefix } = require('../utils/prefix')
 
 module.exports = (userMessage, args) => {
   if (args.length !== 1) {
@@ -8,6 +8,6 @@ module.exports = (userMessage, args) => {
     return
   }
 
-  setPrefix(args[0])
+  setPrefix(args[0], userMessage.guild.id)
   userMessage.channel.send(`Set prefix to ${args[0]}`)
 }

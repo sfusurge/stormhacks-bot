@@ -1,14 +1,19 @@
 const { readFileSync, writeFileSync } = require('fs')
-const { getPrefix } = require('../prefix')
+const { getCache, writeToCache } = require('../utils/cache')
+const { getPrefix } = require('../utils/prefix')
 
-const verifyFilePath = `${__dirname}/../verify.json`
+const verifyFilePath = `${__dirname}/../data/verify.json`
 
 module.exports = (userMessage, args) => {
   const sendError = error =>
     userMessage.channel.send(error).then(() => userMessage.delete())
 
   if (args.length != 1) {
-    sendError(`Invalid usage, use \`${getPrefix()}verify {email address}\``)
+    sendError(
+      `Invalid usage, use \`${getPrefix(
+        userMessage.guild.id
+      )}verify email@address.com}\``
+    )
     return
   }
 
@@ -52,6 +57,14 @@ module.exports = (userMessage, args) => {
     time: Date.now(),
   }
   writeFileSync(verifyFilePath, JSON.stringify(verifyFileData), () => {})
+  const cache = getCache()
+  writeToCache({
+    verificationList: {
+      ...cache.verificationList,
+      [userMessage.member.user.tag]: emailAddress,
+    },
+  })
+
   userMessage.channel
     .send(`${userMessage.author.toString()}, you have now been verified.`)
     .then(() => userMessage.delete())

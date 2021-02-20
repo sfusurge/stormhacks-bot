@@ -1,5 +1,12 @@
 node_modules
 hidden.json
 verify.json
+attend.json
+verified.json
+parse.js
+check.json
+*.bak.*
+*.bak
+*.log
 *.py
 *.csv

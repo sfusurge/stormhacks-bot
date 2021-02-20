@@ -1,19 +1,19 @@
-const { getPrefix } = require('../prefix')
+const { getPrefix } = require('../utils/prefix')
 
 const commands = {
   // setPrefix: require('./setPrefix'),
   verify: require('./verify'),
   unknown: require('./unknown'),
   help: require('./help'),
+  post: require('./post'),
 }
 
-module.exports = (client, userMessage) => {
-  let prefix = getPrefix()
+module.exports = (userMessage, client) => {
+  const guildSnowflake = userMessage.guild.id
+  const prefix = getPrefix(guildSnowflake)
 
   if (userMessage.mentions.has(client.user)) {
-    userMessage.channel.send(
-      `Listing for prefix \`${prefix}\`\nUse \`${prefix}help\` for help`
-    )
+    commands.help(userMessage)
   }
 
   if (userMessage.content.indexOf(prefix) === 0) {
@@ -31,17 +31,5 @@ module.exports = (client, userMessage) => {
     } else {
       commands.unknown(userMessage, command)
     }
-
-    // switch (command) {
-    //   case 'prefix':
-    //     setPrefix(userMessage, args)
-    //     break
-    //   case 'help':
-    //     commands.help(userMessage, args)
-    //     break
-    //   default:
-    //     commands.unknown(userMessage, command)
-    //     break
-    // }
   }
 }
