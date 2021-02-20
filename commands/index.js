@@ -17,10 +17,7 @@ module.exports = (userMessage, client) => {
   }
 
   if (userMessage.content.indexOf(prefix) === 0) {
-    const args = userMessage.content
-      .slice(prefix.length)
-      .split(' ')
-      .map(arg => arg.toLowerCase())
+    const args = userMessage.content.slice(prefix.length).split(' ')
 
     const command = args.shift()
 
